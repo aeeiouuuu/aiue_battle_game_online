@@ -20,12 +20,21 @@
                     <input type="text" id="input-name" placeholder="名前を入力" maxlength="10">
                 </div>
                 <div class="form-group">
-                    <label>お題の単語 (ひらがな 7文字以内)</label>
+                    <label>自分の単語 (ひらがな 7文字以内)</label>
                     <input type="text" id="input-word" placeholder="例: ぱんだ" maxlength="7">
                     <p class="note">※自動的にひらがな・清音に変換されます</p>
                 </div>
                 <button id="btn-join" class="btn-primary">参加する</button>
             </div>
+        
+        <div class="themes-footer">
+             <p class="themes-label">お題のヒント</p>
+             <div class="themes-list">
+                {% for theme in themes %}
+                    <span class="theme-text">{{ theme }}</span>
+                {% endfor %}
+            </div>
+        </div>
         </div>
 
         <div id="game-screen" class="hidden">

@@ -213,3 +213,32 @@ input {
     background-color: #28a745;
     color: white;
 }
+
+/* ... (既存のコードの後ろに追加) ... */
+
+/* お題表示エリア（画面下部・控えめに） */
+.themes-footer {
+    margin-top: 40px;
+    padding: 0 20px;
+    color: #888; /* 薄いグレーにして目立たなくする */
+}
+
+.themes-label {
+    font-size: 0.85em;
+    margin-bottom: 10px;
+    font-weight: normal;
+}
+
+.themes-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* 中央寄せ */
+    gap: 10px;
+}
+
+.theme-text {
+    font-size: 0.85em;
+    background-color: transparent; /* 背景なし */
+    border-bottom: 1px dotted #bbb; /* 下線のみで控えめに */
+    padding-bottom: 2px;
+}
