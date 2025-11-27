@@ -230,3 +230,83 @@ function renderBoard(usedChars, isMyTurn, gameStarted) {
         boardEl.appendChild(btn);
     });
 }
+
+socket.on('new_chat', (data) => {
+    addChatMessage(data);
+});
+
+// ... (renderGame関数などの後、末尾に追加) ...
+
+// --- ★チャット・スタンプ機能 ---
+
+// テキスト送信ボタン
+const btnSendChat = document.getElementById('btn-send-chat');
+const inputChat = document.getElementById('chat-input');
+
+if (btnSendChat && inputChat) {
+    btnSendChat.addEventListener('click', sendChatText);
+    
+    // Enterキーでも送信可能に
+    inputChat.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendChatText();
+        }
+    });
+}
+
+function sendChatText() {
+    const text = inputChat.value.trim();
+    if (!text) return;
+
+    socket.emit('send_chat', {
+        message: text,
+        type: 'text'
+    });
+    inputChat.value = ''; // 入力欄をクリア
+}
+
+// スタンプ送信関数（HTML側から呼ばれる）
+window.sendStamp = function(stampChar) {
+    socket.emit('send_chat', {
+        message: stampChar,
+        type: 'stamp'
+    });
+}
+
+// チャットログへの追加処理
+function addChatMessage(data) {
+    const historyEl = document.getElementById('chat-history');
+    const isMe = (data.uid === myUid);
+    
+    const div = document.createElement('div');
+    div.classList.add('chat-msg');
+    
+    // 自分か他人かでクラスを分ける
+    if (isMe) {
+        div.classList.add('msg-mine');
+    } else {
+        div.classList.add('msg-other');
+    }
+
+    // スタンプかテキストかで表示を変える
+    if (data.type === 'stamp') {
+        div.classList.add('msg-stamp');
+        div.innerText = data.message; // 絵文字のみ表示
+    } else {
+        // 名前 + メッセージ
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'msg-name';
+        nameSpan.innerText = data.name;
+        
+        const textSpan = document.createElement('span');
+        textSpan.innerText = data.message;
+        
+        div.appendChild(nameSpan);
+        div.appendChild(textSpan);
+    }
+
+    historyEl.appendChild(div);
+
+    // 自動スクロール（一番下へ）
+    historyEl.scrollTop = historyEl.scrollHeight;
+}

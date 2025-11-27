@@ -76,6 +76,27 @@
                     <h3>攻撃ボード</h3>
                     <div id="board-grid" class="board-grid"></div>
                 </div>
+
+                <div class="chat-section">
+                    <h3>チャット</h3>
+                    <div id="chat-history" class="chat-history">
+                        <div class="system-msg">ようこそ！</div>
+                    </div>
+                    
+                    <div class="stamp-picker">
+                        <button class="stamp-btn" onclick="sendStamp('👍')">👍</button>
+                        <button class="stamp-btn" onclick="sendStamp('👏')">👏</button>
+                        <button class="stamp-btn" onclick="sendStamp('🤔')">🤔</button>
+                        <button class="stamp-btn" onclick="sendStamp('😱')">😱</button>
+                        <button class="stamp-btn" onclick="sendStamp('⚔️')">⚔️</button>
+                        <button class="stamp-btn" onclick="sendStamp('💀')">💀</button>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-input" placeholder="メッセージ..." maxlength="50">
+                        <button id="btn-send-chat" class="btn-primary" style="width: auto; padding: 10px 20px;">送信</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

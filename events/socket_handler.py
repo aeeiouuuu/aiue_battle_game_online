@@ -69,6 +69,30 @@ def register_socket_events(socketio):
             msg = f"Attack '{char}' by {uid[:4]}: {'HIT' if result.get('hit') else 'MISS'}"
             socketio.emit('log', {'message': msg}, room='game_room')
 
+    @socketio.on('send_chat')
+    def handle_chat(data):
+        uid = request.sid
+        message = data.get('message', '')
+        msg_type = data.get('type', 'text') # 'text' または 'stamp'
+        
+        # プレイヤー名を取得（参加前ならIDの一部）
+        if uid in game_instance.players:
+            name = game_instance.players[uid].name
+        else:
+            name = f"Guest-{uid[:4]}"
+
+        # 文字数制限などのバリデーション（簡易）
+        if msg_type == 'text' and len(message) > 100:
+            message = message[:100]
+
+        # ルーム全員に配信
+        socketio.emit('new_chat', {
+            'uid': uid,
+            'name': name,
+            'message': message,
+            'type': msg_type
+        }, room='game_room')
+
 def broadcast_game_state(socketio):
     for uid in game_instance.players.keys():
         state = game_instance.get_masked_state_for(uid)

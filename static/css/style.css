@@ -444,3 +444,118 @@ h3 {
     70% { transform: scale(1.1) rotate(5deg); }
     100% { transform: scale(1) rotate(0); }
 }
+
+/* ... existing code ... */
+/* ファイルの末尾に追加 */
+
+/* --- 9. チャットエリアのデザイン --- */
+.chat-section {
+    flex: 1;
+    min-width: 300px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    height: 500px; /* 高さを固定 */
+}
+
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    background: #f9f9f9;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* メッセージの吹き出し */
+.chat-msg {
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 85%;
+    font-size: 0.95em;
+    word-wrap: break-word;
+    position: relative;
+    animation: popIn 0.3s ease;
+}
+
+/* 自分のメッセージ */
+.chat-msg.msg-mine {
+    align-self: flex-end;
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    border-bottom-right-radius: 2px;
+}
+
+/* 相手のメッセージ */
+.chat-msg.msg-other {
+    align-self: flex-start;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #333;
+    border-bottom-left-radius: 2px;
+}
+
+/* 名前ラベル */
+.msg-name {
+    font-size: 0.75em;
+    color: #888;
+    margin-bottom: 2px;
+    display: block;
+}
+
+/* スタンプ表示 */
+.msg-stamp {
+    font-size: 3em; /* スタンプは大きく */
+    background: transparent !important;
+    border: none !important;
+    padding: 0;
+    margin: 5px 0;
+}
+
+/* スタンプボタンエリア */
+.stamp-picker {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.stamp-btn {
+    font-size: 1.5em;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    padding: 5px 10px;
+}
+
+.stamp-btn:hover {
+    transform: scale(1.2);
+    background-color: #f0f0f0;
+}
+
+.stamp-btn:active {
+    transform: scale(0.9);
+}
+
+/* 入力エリア */
+.chat-input-area {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    padding: 8px;
+    font-size: 16px;
+}
