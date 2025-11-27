@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>あいうえバトル Online</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>あいうえバトル Online</h1>
+
+        <div id="login-screen">
+            <div class="card">
+                <h2>ゲームに参加</h2>
+                <div class="form-group">
+                    <label>プレイヤー名</label>
+                    <input type="text" id="input-name" placeholder="名前を入力" maxlength="10">
+                </div>
+                <div class="form-group">
+                    <label>お題の単語 (ひらがな 7文字以内)</label>
+                    <input type="text" id="input-word" placeholder="例: ぱんだ" maxlength="7">
+                    <p class="note">※自動的にひらがな・清音に変換されます</p>
+                </div>
+                <button id="btn-join" class="btn-primary">参加する</button>
+            </div>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            
+            <div id="game-status" class="status-bar">待機中...</div>
+
+            <div id="reset-controls" class="card hidden" style="margin-bottom: 20px; background-color: #ffeeba;">
+                <h3>ゲーム終了</h3>
+                <p>ロビーに戻って単語を決め直しますか？</p>
+                <button id="btn-reset-game" class="btn-primary" style="background-color: #d39e00;">ロビーに戻る（全員）</button>
+            </div>
+
+            <div id="lobby-controls" class="card" style="margin-bottom: 20px;">
+                <h3>参加者待機中</h3>
+                <p>全員揃ったら開始ボタンを押してください（2人以上）</p>
+                <button id="btn-start-game" class="btn-primary" disabled>ゲーム開始</button>
+            </div>
+
+            <div class="game-layout">
+                <div class="players-section">
+                    <h3>参加者リスト</h3>
+                    <div id="players-list" class="players-grid"></div>
+                </div>
+
+                <div class="board-section">
+                    <h3>攻撃ボード</h3>
+                    <div id="board-grid" class="board-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+/* 基本設定 */
+body {
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* カードスタイル */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+}
+.btn-primary:hover { background-color: #0056b3; }
+
+/* ゲーム画面レイアウト */
+.status-bar {
+    background: #333;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.game-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.players-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+.board-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* プレイヤーリスト */
+.players-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.player-card {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    border: 2px solid #ddd;
+    text-align: left;
+    position: relative;
+}
+
+.player-card.is-me {
+    border-color: #007bff;
+    background-color: #e7f1ff;
+}
+
+.player-card.is-turn {
+    border-color: #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+.player-card.is-dead {
+    background-color: #e9ecef;
+    opacity: 0.8;
+}
+.player-card.is-dead .name-label {
+    text-decoration: line-through;
+    color: #888;
+}
+
+/* 7枚のボード（文字表示） */
+.word-board-container {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.char-box {
+    width: 35px;
+    height: 40px;
+    line-height: 40px;
+    border: 2px solid #333;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2em;
+    background: #fff;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+
+.char-box.hidden-char {
+    background-color: #333;
+    color: #333; /* 文字を見えなくする */
+    border-color: #555;
+}
+
+/* 空きスロット（×）のスタイル */
+.char-box.empty-slot {
+    color: #ccc;
+    border-color: #ccc;
+}
+
+/* 50音ボード */
+.board-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+}
+
+.char-btn {
+    padding: 10px 0;
+    font-size: 16px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.char-btn:hover:not(:disabled) {
+    background-color: #e2e6ea;
+    transform: translateY(-2px);
+}
+
+/* 修正箇所: 無効化（攻撃済み）ボタンのスタイルを明確に */
+.char-btn:disabled {
+    background-color: #555;      /* 背景を濃いグレーに */
+    color: #aaa;                 /* 文字を薄いグレーに */
+    cursor: not-allowed;
+    border-color: #444;
+    text-decoration: line-through; /* 取り消し線を追加 */
+    opacity: 0.6;
+}
+
+/* 自分のターン */
+.active-turn .char-btn:not(:disabled) {
+    background-color: #fff;
+    border-color: #28a745;
+    color: #28a745;
+    font-weight: bold;
+}
+.active-turn .char-btn:not(:disabled):hover {
+    background-color: #28a745;
+    color: white;
+}
