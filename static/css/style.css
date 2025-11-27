@@ -192,8 +192,9 @@ h3 {
     border-radius: 12px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     text-align: left;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: box-shadow 0.3s, transform 0.3s; /* トランジションのみ残す */
     border: 2px solid transparent;
+    position: relative;
 }
 
 /* 自分のカード */
@@ -362,4 +363,84 @@ h3 {
     border-radius: 4px;
     color: #555;
     box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+}
+
+/* --- 1. 画面表示時のふわっと浮き上がるアニメーション --- */
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+
+
+/* プレイヤーカードは少しずつタイミングをずらす */
+.player-card:nth-child(1),
+.player-card:nth-child(2),
+.player-card:nth-child(3),
+.player-card:nth-child(4) {
+    animation-delay: 0s;
+}
+
+
+/* --- 2. 文字がめくれた時の強調（拡大＋震え） --- */
+@keyframes hit-emphasis {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.5) rotate(15deg); } /* 大きく拡大して傾く */
+    60% { transform: scale(1.2) rotate(-10deg); }
+    80% { transform: scale(1.1) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+.char-box.exposed {
+    /* 既存の色指定などは維持しつつ、アニメーションを適用 */
+    background-color: #ff5252;
+    color: white;
+    box-shadow: 0 4px 0 #b71c1c, 0 5px 5px rgba(0,0,0,0.2);
+    
+    /* アニメーション適用 */
+    
+    z-index: 10; /* 拡大時に隣の要素に隠れないように手前に出す */
+}
+
+.char-box.just-exposed {
+    animation: hit-emphasis 0.6s cubic-bezier(.36,.07,.19,.97) both;
+    z-index: 10;
+}
+
+/* --- 3. 脱落したプレイヤー（グレーアウト＋傾いて落ちる） --- */
+.player-card.is-dead {
+    transition: all 0.6s ease; /* ゆっくり変化させる */
+    
+    /* グレーアウト */
+    filter: grayscale(100%);
+    opacity: 0.6;
+    background-color: #dcdcdc;
+    
+    /* 傾いて少し下に落ちる演出 */
+    transform: rotate(5deg) translateY(10px);
+    box-shadow: none; /* 浮き上がっている影を消す */
+}
+
+
+/* --- 4. ボタンを押した時のゼリーのような動き --- */
+/* 自分のターンで、かつ無効化されていないボタンを押した時 */
+.active-turn .char-btn:active:not(:disabled) {
+    /* 横に伸びて縦に潰れる（むにゅっと感） */
+    transform: scale(1.1, 0.85) translateY(4px);
+    transition: transform 0.05s ease-out;
+}
+
+@keyframes hit-emphasis {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.6) rotate(15deg); } /* 大きく強調 */
+    50% { transform: scale(1.3) rotate(-10deg); }
+    70% { transform: scale(1.1) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); }
 }

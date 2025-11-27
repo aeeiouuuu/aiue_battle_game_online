@@ -17,6 +17,9 @@ const HIRAGANA = [
 let myUid = null;
 let currentGameState = null;
 
+// ★追加: 前回の開示状況を記録する変数（ヒットアニメーション判定用）
+let previousOpenedIndices = {}; 
+
 socket.on('connect', () => {
     console.log("Connected. ID:", socket.id);
     myUid = socket.id;
@@ -35,18 +38,19 @@ socket.on('update_state', (state) => {
     renderGame(state);
 });
 
-// --- 追加: リセット通知を受け取った時の処理 ---
+// --- リセット通知を受け取った時の処理 ---
 socket.on('game_reset', () => {
     alert("ゲームがリセットされました。ロビーに戻ります。");
     
+    // ★追加: リセット時はアニメーション履歴もクリア
+    previousOpenedIndices = {};
+
     // 画面遷移: ゲーム画面 -> ログイン画面
     document.getElementById('game-screen').classList.add('hidden');
     document.getElementById('login-screen').classList.remove('hidden');
     
     // リセットボタンエリアを隠す
     document.getElementById('reset-controls').classList.add('hidden');
-    
-    // 入力フォームは前回の値を残したままにするので、そのまま「参加する」を押せばすぐ再戦も可能
 });
 
 // 参加ボタン
@@ -68,6 +72,9 @@ document.getElementById('btn-join').addEventListener('click', () => {
         return;
     }
 
+    // 新規参加時も履歴をリセットしておく（念のため）
+    previousOpenedIndices = {};
+
     socket.emit('join_game', { name: name, word: word });
 
     document.getElementById('login-screen').classList.add('hidden');
@@ -79,7 +86,7 @@ document.getElementById('btn-start-game').addEventListener('click', () => {
     socket.emit('request_start_game');
 });
 
-// --- 追加: リセットボタン ---
+// --- リセットボタン ---
 document.getElementById('btn-reset-game').addEventListener('click', () => {
     if(confirm("全員の画面をロビーに戻します。よろしいですか？")) {
         socket.emit('request_reset_game');
@@ -94,7 +101,7 @@ function renderGame(state) {
     const statusEl = document.getElementById('game-status');
     const lobbyEl = document.getElementById('lobby-controls');
     const startBtn = document.getElementById('btn-start-game');
-    const resetEl = document.getElementById('reset-controls'); // リセットボタンエリア
+    const resetEl = document.getElementById('reset-controls');
 
     if (!game_started) {
         // ゲーム開始前（ロビー画面）
@@ -102,9 +109,8 @@ function renderGame(state) {
         statusEl.style.backgroundColor = "#6c757d"; 
         
         lobbyEl.classList.remove('hidden');
-        resetEl.classList.add('hidden'); // 開始前はリセットボタン不要
+        resetEl.classList.add('hidden');
         
-        // 2人以上なら開始ボタン有効化
         if (players.length >= 2) {
             startBtn.disabled = false;
             startBtn.innerText = `ゲーム開始 (${players.length}人)`;
@@ -120,8 +126,6 @@ function renderGame(state) {
         if (game_over) {
             statusEl.innerText = `ゲーム終了！ 勝者: ${winner || 'なし'}`;
             statusEl.style.backgroundColor = "#dc3545"; 
-            
-            // --- 追加: ゲーム終了時にリセットボタンを表示 ---
             resetEl.classList.remove('hidden');
             
         } else if (isMyTurn) {
@@ -157,12 +161,20 @@ function renderGame(state) {
         const boardContainer = document.createElement('div');
         boardContainer.className = 'word-board-container';
 
+        // ★追加: このプレイヤーの前回の開示状況を取得
+        const prevIndices = previousOpenedIndices[p.uid] || [];
+
         p.display_word.forEach((char, index) => {
             const charBox = document.createElement('div');
             charBox.className = 'char-box';
 
-        if (p.opened_indices.includes(index)) {
+            if (p.opened_indices.includes(index)) {
                 charBox.classList.add('exposed');
+                
+                // ★追加: 「前回は開いていなかった」かつ「今は開いている」場合のみアニメーションクラス付与
+                if (!prevIndices.includes(index)) {
+                    charBox.classList.add('just-exposed');
+                }
             }
 
             if (char === '*') {
@@ -172,8 +184,8 @@ function renderGame(state) {
                 charBox.innerText = char;
                 if (char === '×') {
                     charBox.classList.add('empty-slot');
-                    // 空きスロットはexposedスタイルを除去（念のため）
                     charBox.classList.remove('exposed');
+                    charBox.classList.remove('just-exposed');
                 }
             }
             boardContainer.appendChild(charBox);
@@ -181,6 +193,9 @@ function renderGame(state) {
 
         div.appendChild(boardContainer);
         playersListEl.appendChild(div);
+
+        // ★追加: 今回の開示状況を「前回」として保存更新
+        previousOpenedIndices[p.uid] = [...p.opened_indices];
     });
 
     // --- 3. 50音ボード描画 ---
