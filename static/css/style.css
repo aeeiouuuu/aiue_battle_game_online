@@ -1,87 +1,185 @@
-/* 基本設定 */
+/* static/css/style.css */
+
+/* --- 1. 全体設定と背景 --- */
 body {
-    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
-    background-color: #f0f2f5;
-    color: #333;
+    /* Google Fontsで読み込んだ丸ゴシックを適用 */
+    font-family: "M PLUS Rounded 1c", "Hiragino Kaku Gothic ProN", sans-serif;
     margin: 0;
     padding: 20px;
     text-align: center;
+    color: #444;
+    
+    /* 背景画像：木目調のテーブルクロス */
+    background: url('https://images.unsplash.com/photo-1543242940-b63390c50030?q=80&w=2000&auto=format&fit=crop') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
+/* 背景を少し白くして文字を見やすくするオーバーレイ */
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4); /* 透明度40%の白 */
+    z-index: -1;
+    backdrop-filter: blur(2px); /* すりガラス効果 */
 }
 
 .container {
     max-width: 900px;
     margin: 0 auto;
+    position: relative;
 }
 
 .hidden {
     display: none !important;
 }
 
-/* カードスタイル */
+/* --- 2. ヘッダーデザイン --- */
+.game-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* 画像を乗せる場合（任意） */
+    background: url('https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=1000&auto=format&fit=crop') center/cover;
+    
+    border-radius: 15px;
+    padding: 40px 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    position: relative;
+    border: 4px solid white;
+}
+
+.header-content h1 {
+    margin: 0;
+    font-size: 2.5em;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+
+.subtitle {
+    margin: 10px 0 0;
+    font-size: 1.1em;
+    opacity: 0.95;
+    font-weight: 700;
+}
+
+/* --- 3. カード（白い枠）のデザイン --- */
 .card {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    max-width: 400px;
+    background: rgba(255, 255, 255, 0.9); /* 少し透けさせる */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.6);
+    max-width: 500px;
     margin: 20px auto;
+    backdrop-filter: blur(5px);
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
 }
 
 input {
     width: 100%;
-    padding: 10px;
-    font-size: 16px;
+    padding: 12px;
+    font-size: 18px;
     box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit; /* フォントを継承 */
 }
 
+input:focus {
+    border-color: #667eea;
+}
+
+/* --- 4. ボタンの共通デザイン（押し込める立体ボタン） --- */
 .btn-primary {
-    background-color: #007bff;
+    background-color: #3f51b5;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 30px;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
     width: 100%;
+    font-family: inherit;
+    
+    /* 立体的な影 */
+    box-shadow: 0 4px 0 #283593, 0 5px 10px rgba(0,0,0,0.2);
+    transition: all 0.1s;
 }
-.btn-primary:hover { background-color: #0056b3; }
 
-/* ゲーム画面レイアウト */
+.btn-primary:hover:not(:disabled) {
+    background-color: #5c6bc0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #283593, 0 8px 15px rgba(0,0,0,0.2);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(4px); /* 押し込んだ動き */
+    box-shadow: none; /* 影を消す */
+}
+
+.btn-primary:disabled {
+    background-color: #9fa8da;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --- 5. ゲーム画面レイアウト --- */
 .status-bar {
     background: #333;
     color: white;
-    padding: 10px;
-    border-radius: 4px;
+    padding: 15px;
+    border-radius: 10px;
     margin-bottom: 20px;
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1.3em;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
 .game-layout {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 30px;
     justify-content: center;
+    align-items: flex-start;
 }
 
-.players-section {
+.players-section, .board-section {
     flex: 1;
-    min-width: 300px;
+    min-width: 320px; /* スマホで崩れないように */
+    background: rgba(255, 255, 255, 0.85);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.board-section {
-    flex: 1;
-    min-width: 300px;
+h3 {
+    margin-top: 0;
+    border-bottom: 2px dashed #ccc;
+    padding-bottom: 10px;
+    color: #555;
 }
 
-/* プレイヤーリスト */
+/* --- 6. プレイヤーリストと文字タイル --- */
 .players-grid {
     display: flex;
     flex-direction: column;
@@ -91,154 +189,177 @@ input {
 .player-card {
     background: white;
     padding: 15px;
-    border-radius: 6px;
-    border: 2px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     text-align: left;
-    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
 }
 
+/* 自分のカード */
 .player-card.is-me {
-    border-color: #007bff;
-    background-color: #e7f1ff;
+    background-color: #f3f8ff;
+    border-color: #8bb9f9;
 }
 
+/* ターン中の人 */
 .player-card.is-turn {
-    border-color: #28a745;
-    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+    transform: scale(1.02);
+    border-color: #4caf50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+    z-index: 10;
 }
 
+/* 脱落者 */
 .player-card.is-dead {
-    background-color: #e9ecef;
-    opacity: 0.8;
+    opacity: 0.7;
+    background-color: #eee;
 }
 .player-card.is-dead .name-label {
     text-decoration: line-through;
-    color: #888;
 }
 
-/* 7枚のボード（文字表示） */
+.name-label {
+    display: inline-block;
+    background: #eee;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    color: #333;
+    margin-bottom: 5px;
+}
+.is-turn .name-label {
+    background: #4caf50;
+    color: white;
+}
+
+/* 文字タイルのコンテナ */
 .word-board-container {
     display: flex;
     justify-content: center;
-    gap: 5px;
-    margin-top: 10px;
+    gap: 6px;
+    margin-top: 8px;
+    background: rgba(0,0,0,0.03);
+    padding: 8px;
+    border-radius: 8px;
 }
 
+/* 文字タイル本体（立体風） */
 .char-box {
-    width: 35px;
-    height: 40px;
-    line-height: 40px;
-    border: 2px solid #333;
-    border-radius: 4px;
+    width: 40px;
+    height: 45px;
+    line-height: 45px; /* 縦中央揃え */
     text-align: center;
-    font-weight: bold;
-    font-size: 1.2em;
+    font-weight: 800;
+    font-size: 1.4em;
+    border-radius: 6px;
+    
     background: #fff;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
+    color: #5d4037;
+    
+    /* 下に影をつけて厚みを表現 */
+    box-shadow: 0 4px 0 #d7ccc8, 0 5px 5px rgba(0,0,0,0.1);
+    transition: transform 0.1s;
+    user-select: none;
 }
 
+/* バレた文字 */
 .char-box.exposed {
-    background-color: #ffcccc; /* 薄い赤背景 */
-    color: #d63384;            /* 濃いピンク文字 */
-    border-color: #dc3545;     /* 赤枠 */
+    background-color: #ff5252;
+    color: white;
+    box-shadow: 0 4px 0 #b71c1c, 0 5px 5px rgba(0,0,0,0.2);
 }
 
-/* 自分の手札で、まだバレていない（安全な）文字のスタイルを明示する場合 */
-.player-card.is-me .char-box:not(.exposed):not(.empty-slot) {
-    background-color: #e3f2fd; /* 薄い青（安全であることを示唆） */
-    border-color: #90caf9;
-}
-
+/* 隠れている文字（?） */
 .char-box.hidden-char {
-    background-color: #333;
-    color: #333; /* 文字を見えなくする */
-    border-color: #555;
+    background-color: #37474f;
+    color: #cfd8dc;
+    box-shadow: 0 4px 0 #263238, 0 5px 5px rgba(0,0,0,0.2);
 }
 
-/* 空きスロット（×）のスタイル */
+/* 空きスロット */
 .char-box.empty-slot {
-    color: #ccc;
-    border-color: #ccc;
+    background: transparent;
+    box-shadow: none;
+    border: 2px dashed #ccc;
+    color: transparent;
+    height: 41px; /* ボーダー分調整 */
+    width: 36px;
 }
 
-/* 50音ボード */
+/* --- 7. 50音ボード（キーボード） --- */
 .board-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
+    gap: 8px;
 }
 
 .char-btn {
     padding: 10px 0;
-    font-size: 16px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
     background: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    color: #333;
+    font-family: inherit;
+    
+    /* キーボードの立体感 */
+    box-shadow: 0 4px 0 #cfd8dc;
+    transition: all 0.1s;
+    cursor: default; /* デフォルトはカーソルなし（ターン外） */
+}
+
+/* 自分のターン時のスタイル */
+.active-turn .char-btn:not(:disabled) {
     cursor: pointer;
-    transition: all 0.2s;
+    color: #2e7d32;
+    background-color: #e8f5e9;
+    box-shadow: 0 4px 0 #a5d6a7;
 }
 
 .active-turn .char-btn:hover:not(:disabled) {
-    background-color: #e2e6ea;
     transform: translateY(-2px);
-    cursor: pointer;
+    box-shadow: 0 6px 0 #a5d6a7;
+    background-color: #c8e6c9;
 }
 
-/* 追加: 自分のターンではないが、まだ使われていない文字のスタイル */
-/* 見た目は白のままだが、カーソルを通常に戻してクリックできないことを示す */
-.board-grid:not(.active-turn) .char-btn:not(:disabled) {
-    cursor: default;
-    opacity: 1.0; /* 読みやすくするため不透明のまま */
+.active-turn .char-btn:active:not(:disabled) {
+    transform: translateY(4px); /* 押し込む */
+    box-shadow: none;
 }
 
-/* 修正箇所: 無効化（攻撃済み）ボタンのスタイルを明確に */
+/* すでに使った文字 */
 .char-btn:disabled {
-    background-color: #555;      /* 背景を濃いグレーに */
-    color: #aaa;                 /* 文字を薄いグレーに */
-    cursor: not-allowed;
-    border-color: #444;
-    text-decoration: line-through; /* 取り消し線を追加 */
-    opacity: 0.6;
+    background: #eceff1;
+    color: #b0bec5;
+    box-shadow: none;
+    transform: translateY(4px); /* 既に押し込まれている表現 */
+    border: 1px solid #cfd8dc;
 }
 
-/* 自分のターン */
-.active-turn .char-btn:not(:disabled) {
-    background-color: #fff;
-    border-color: #28a745;
-    color: #28a745;
-    font-weight: bold;
-}
-.active-turn .char-btn:not(:disabled):hover {
-    background-color: #28a745;
-    color: white;
-}
-
-/* ... (既存のコードの後ろに追加) ... */
-
-/* お題表示エリア（画面下部・控えめに） */
+/* --- 8. お題エリア --- */
 .themes-footer {
-    margin-top: 40px;
+    margin-top: 30px;
     padding: 0 20px;
-    color: #888; /* 薄いグレーにして目立たなくする */
 }
-
 .themes-label {
-    font-size: 0.85em;
+    font-size: 0.9em;
+    color: #fff; /* 背景が暗い/画像なので白文字に */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     margin-bottom: 10px;
-    font-weight: normal;
 }
-
 .themes-list {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* 中央寄せ */
+    justify-content: center;
     gap: 10px;
 }
-
 .theme-text {
     font-size: 0.85em;
-    background-color: transparent; /* 背景なし */
-    border-bottom: 1px dotted #bbb; /* 下線のみで控えめに */
-    padding-bottom: 2px;
+    background-color: rgba(255,255,255,0.8);
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #555;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.1);
 }

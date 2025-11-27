@@ -4,13 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>あいうえバトル Online</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="/static/css/style.css">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
 
+    <div class="bg-overlay"></div>
+
     <div class="container">
-        <h1>あいうえバトル Online</h1>
+        <header class="game-header">
+            <div class="header-content">
+                <h1>あいうえバトル Online</h1>
+                <p class="subtitle">言葉を隠して、相手を当てろ！</p>
+            </div>
+        </header>
 
         <div id="login-screen">
             <div class="card">
@@ -22,29 +35,29 @@
                 <div class="form-group">
                     <label>自分の単語 (ひらがな 7文字以内)</label>
                     <input type="text" id="input-word" placeholder="例: ぱんだ" maxlength="7">
-                    <p class="note">※自動的にひらがな・清音に変換されます</p>
+                    <p class="note" style="font-size: 0.8em; color: #666; margin-top: 5px;">※自動的にひらがな・清音に変換されます</p>
                 </div>
                 <button id="btn-join" class="btn-primary">参加する</button>
             </div>
         
-        <div class="themes-footer">
-             <p class="themes-label">お題のヒント</p>
-             <div class="themes-list">
-                {% for theme in themes %}
-                    <span class="theme-text">{{ theme }}</span>
-                {% endfor %}
+            <div class="themes-footer">
+                 <p class="themes-label">お題のヒント</p>
+                 <div class="themes-list">
+                    {% for theme in themes %}
+                        <span class="theme-text">{{ theme }}</span>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
         </div>
 
         <div id="game-screen" class="hidden">
             
             <div id="game-status" class="status-bar">待機中...</div>
 
-            <div id="reset-controls" class="card hidden" style="margin-bottom: 20px; background-color: #ffeeba;">
-                <h3>ゲーム終了</h3>
+            <div id="reset-controls" class="card hidden" style="margin-bottom: 20px; background-color: #fff3cd; border-color: #ffeeba;">
+                <h3 style="margin-top:0;">ゲーム終了</h3>
                 <p>ロビーに戻って単語を決め直しますか？</p>
-                <button id="btn-reset-game" class="btn-primary" style="background-color: #d39e00;">ロビーに戻る（全員）</button>
+                <button id="btn-reset-game" class="btn-primary" style="background-color: #d39e00; box-shadow: 0 4px 0 #9d7600;">ロビーに戻る（全員）</button>
             </div>
 
             <div id="lobby-controls" class="card" style="margin-bottom: 20px;">
