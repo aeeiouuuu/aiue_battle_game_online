@@ -179,9 +179,17 @@ input {
     transition: all 0.2s;
 }
 
-.char-btn:hover:not(:disabled) {
+.active-turn .char-btn:hover:not(:disabled) {
     background-color: #e2e6ea;
     transform: translateY(-2px);
+    cursor: pointer;
+}
+
+/* 追加: 自分のターンではないが、まだ使われていない文字のスタイル */
+/* 見た目は白のままだが、カーソルを通常に戻してクリックできないことを示す */
+.board-grid:not(.active-turn) .char-btn:not(:disabled) {
+    cursor: default;
+    opacity: 1.0; /* 読みやすくするため不透明のまま */
 }
 
 /* 修正箇所: 無効化（攻撃済み）ボタンのスタイルを明確に */

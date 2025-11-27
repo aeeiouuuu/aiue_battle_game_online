@@ -206,10 +206,6 @@ function renderBoard(usedChars, isMyTurn, gameStarted) {
             btn.disabled = true;
         }
 
-        if (!isMyTurn || !gameStarted) {
-            btn.disabled = true;
-        }
-
         btn.onclick = () => {
             if (isMyTurn && gameStarted && !btn.disabled) {
                 socket.emit('attack', { char: char });
