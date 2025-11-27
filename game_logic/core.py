@@ -153,6 +153,7 @@ class Game:
                 "uid": uid,
                 "name": p.name,
                 "display_word": display_word,
+                "opened_indices": p.opened_indices,
                 "is_alive": p.is_alive,
                 "is_turn": (uid == self.get_current_player_uid()) if self.game_started else False
             })

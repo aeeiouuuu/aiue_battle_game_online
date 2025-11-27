@@ -157,9 +157,13 @@ function renderGame(state) {
         const boardContainer = document.createElement('div');
         boardContainer.className = 'word-board-container';
 
-        p.display_word.forEach(char => {
+        p.display_word.forEach((char, index) => {
             const charBox = document.createElement('div');
             charBox.className = 'char-box';
+
+        if (p.opened_indices.includes(index)) {
+                charBox.classList.add('exposed');
+            }
 
             if (char === '*') {
                 charBox.classList.add('hidden-char');
@@ -168,6 +172,8 @@ function renderGame(state) {
                 charBox.innerText = char;
                 if (char === '×') {
                     charBox.classList.add('empty-slot');
+                    // 空きスロットはexposedスタイルを除去（念のため）
+                    charBox.classList.remove('exposed');
                 }
             }
             boardContainer.appendChild(charBox);

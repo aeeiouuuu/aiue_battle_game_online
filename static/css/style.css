@@ -135,6 +135,19 @@ input {
     font-size: 1.2em;
     background: #fff;
     box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.char-box.exposed {
+    background-color: #ffcccc; /* 薄い赤背景 */
+    color: #d63384;            /* 濃いピンク文字 */
+    border-color: #dc3545;     /* 赤枠 */
+}
+
+/* 自分の手札で、まだバレていない（安全な）文字のスタイルを明示する場合 */
+.player-card.is-me .char-box:not(.exposed):not(.empty-slot) {
+    background-color: #e3f2fd; /* 薄い青（安全であることを示唆） */
+    border-color: #90caf9;
 }
 
 .char-box.hidden-char {
