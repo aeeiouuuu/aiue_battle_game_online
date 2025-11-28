@@ -559,3 +559,31 @@ h3 {
     padding: 8px;
     font-size: 16px;
 }
+
+/* ...既存のコードの最後に追加... */
+
+/* --- 9. 背景切り替えボタン（フローティング） --- */
+.btn-floating {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background-color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1000; /* 最前面に表示 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-floating:hover {
+    transform: scale(1.1);
+    background-color: #f0f0f0;
+}
+
+.btn-floating:active {
+    transform: scale(0.9);
+}

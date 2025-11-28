@@ -1,5 +1,28 @@
 const socket = io();
 
+
+const BACKGROUND_IMAGES = [
+    "bg.jpg",       // デフォルト
+    "bg2.jpg",      // 追加した画像
+    "bg3.jpg",      // 追加した画像
+    "bg4.jpg"
+];
+let currentBgIndex = 0;
+
+document.getElementById('btn-change-bg').addEventListener('click', () => {
+    // インデックスを進める
+    currentBgIndex = (currentBgIndex + 1) % BACKGROUND_IMAGES.length;
+    
+    // 次の画像ファイル名を取得
+    const nextImage = BACKGROUND_IMAGES[currentBgIndex];
+    
+    // bodyの背景画像を更新
+    document.body.style.backgroundImage = `url('/static/images/${nextImage}')`;
+    
+    // (オプション) 切り替えたことをログに出すなら
+    console.log(`Background changed to: ${nextImage}`);
+});
+
 // 50音表（ひらがな + ー）
 const HIRAGANA = [
     "あ","い","う","え","お",
