@@ -1,3 +1,5 @@
 memo.md
 repomix-output.xml
+__pycache__/
+*.pyc
 
