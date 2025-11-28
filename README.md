@@ -30,14 +30,18 @@ Flask と Socket.IO を使用した、リアルタイム対戦型単語推測ゲ
     pip install flask flask-socketio
     ```
 
-3.  **サーバーの起動**
+3.  **起動**
 
     ```bash
     python app.py
     ```
 
 4.  **ゲームへのアクセス**
+
+    ```bash
     ngrok http 5001
+    ```
+  生成されたURLにアクセスしてゲームを開始します。
 
 ## 遊び方
 
