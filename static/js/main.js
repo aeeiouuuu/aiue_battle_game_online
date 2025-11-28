@@ -5,7 +5,6 @@ const BACKGROUND_IMAGES = [
     "bg.jpg",       // デフォルト
     "bg2.jpg",      // 追加した画像
     "bg3.jpg",      // 追加した画像
-    "bg4.jpg"
 ];
 let currentBgIndex = 0;
 
