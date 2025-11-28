@@ -1,334 +1,142 @@
 const socket = io();
+const $ = id => document.getElementById(id); // 短縮用ヘルパー
+const el = (tag, cls = '', txt = '') => {    // 要素作成ヘルパー
+    const e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(txt) e.innerText = txt;
+    return e;
+};
 
+// --- 設定・状態 ---
+const IMAGES = ["bg.jpg", "bg2.jpg", "bg3.jpg"];
+const HIRAGANA = [...'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんー'];
+let myUid, currentBg = 0, prevOpen = {}; 
 
-const BACKGROUND_IMAGES = [
-    "bg.jpg",       // デフォルト
-    "bg2.jpg",      // 追加した画像
-    "bg3.jpg",      // 追加した画像
-];
-let currentBgIndex = 0;
+// --- Socket受信 ---
+socket.on('connect', () => (myUid = socket.id) && console.log("ID:", myUid));
+socket.on('error', d => alert("エラー: " + d.message));
+socket.on('log', d => console.log("Log:", d.message));
+socket.on('update_state', renderGame);
+socket.on('new_chat', addChatMessage);
 
-document.getElementById('btn-change-bg').addEventListener('click', () => {
-    // インデックスを進める
-    currentBgIndex = (currentBgIndex + 1) % BACKGROUND_IMAGES.length;
-    
-    // 次の画像ファイル名を取得
-    const nextImage = BACKGROUND_IMAGES[currentBgIndex];
-    
-    // bodyの背景画像を更新
-    document.body.style.backgroundImage = `url('/static/images/${nextImage}')`;
-    
-    // (オプション) 切り替えたことをログに出すなら
-    console.log(`Background changed to: ${nextImage}`);
-});
-
-// 50音表（ひらがな + ー）
-const HIRAGANA = [
-    "あ","い","う","え","お",
-    "か","き","く","け","こ",
-    "さ","し","す","せ","そ",
-    "た","ち","つ","て","と",
-    "な","に","ぬ","ね","の",
-    "は","ひ","ふ","へ","ほ",
-    "ま","み","む","め","も",
-    "や","ゆ","よ",
-    "ら","り","る","れ","ろ",
-    "わ","を","ん","ー"
-];
-
-let myUid = null;
-let currentGameState = null;
-
-// ★追加: 前回の開示状況を記録する変数（ヒットアニメーション判定用）
-let previousOpenedIndices = {}; 
-
-socket.on('connect', () => {
-    console.log("Connected. ID:", socket.id);
-    myUid = socket.id;
-});
-
-socket.on('error', (data) => {
-    alert("エラー: " + data.message);
-});
-
-socket.on('log', (data) => {
-    console.log("Log:", data.message);
-});
-
-socket.on('update_state', (state) => {
-    currentGameState = state;
-    renderGame(state);
-});
-
-// --- リセット通知を受け取った時の処理 ---
 socket.on('game_reset', () => {
-    alert("ゲームがリセットされました。ロビーに戻ります。");
-    
-    // ★追加: リセット時はアニメーション履歴もクリア
-    previousOpenedIndices = {};
-
-    // 画面遷移: ゲーム画面 -> ログイン画面
-    document.getElementById('game-screen').classList.add('hidden');
-    document.getElementById('login-screen').classList.remove('hidden');
-    
-    // リセットボタンエリアを隠す
-    document.getElementById('reset-controls').classList.add('hidden');
+    alert("リセットされました。");
+    prevOpen = {};
+    toggleScreens(false); // ロビーへ
 });
 
-// 参加ボタン
-document.getElementById('btn-join').addEventListener('click', () => {
-    const name = document.getElementById('input-name').value;
-    const word = document.getElementById('input-word').value;
+// --- UI操作イベント ---
+$('btn-change-bg').onclick = () => {
+    currentBg = (currentBg + 1) % IMAGES.length;
+    document.body.style.backgroundImage = `url('/static/images/${IMAGES[currentBg]}')`;
+};
 
-    if (!name || !word) {
-        alert("名前と単語を入力してください");
-        return;
+$('btn-join').onclick = () => {
+    const [name, word] = [$('input-name').value, $('input-word').value];
+    if (!name || !word) return alert("入力してください");
+    if (word.length > 7 || !/^[ぁ-んァ-ヶー]+$/.test(word)) return alert("7文字以内・かなのみです");
+
+    prevOpen = {};
+    socket.emit('join_game', { name, word });
+    toggleScreens(true); // ゲーム画面へ
+};
+
+$('btn-start-game').onclick = () => socket.emit('request_start_game');
+$('btn-reset-game').onclick = () => confirm("リセットしますか？") && socket.emit('request_reset_game');
+
+// チャット送信
+const sendChat = (type, msg) => {
+    if(!msg) return;
+    socket.emit('send_chat', { message: msg, type });
+    if(type === 'text') $('chat-input').value = '';
+};
+
+$('btn-send-chat').onclick = () => sendChat('text', $('chat-input').value.trim());
+
+$('chat-input').onkeydown = e => {
+    if (e.key === 'Enter' && !e.isComposing) {
+        sendChat('text', $('chat-input').value.trim());
     }
-    if (word.length > 7) {
-         alert("単語は7文字以内で入力してください");
-         return;
-    }
-    const kanaRegex = /^[ぁ-んァ-ヶー]+$/;
-    if (!kanaRegex.test(word)) {
-        alert("単語には「ひらがな」または「カタカナ」のみ使用できます。\n（漢字、英数字、記号は使えません）");
-        return;
-    }
+};
 
-    // 新規参加時も履歴をリセットしておく（念のため）
-    previousOpenedIndices = {};
+window.sendStamp = char => sendChat('stamp', char);
 
-    socket.emit('join_game', { name: name, word: word });
-
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('game-screen').classList.remove('hidden');
-});
-
-// ゲーム開始ボタン
-document.getElementById('btn-start-game').addEventListener('click', () => {
-    socket.emit('request_start_game');
-});
-
-// --- リセットボタン ---
-document.getElementById('btn-reset-game').addEventListener('click', () => {
-    if(confirm("全員の画面をロビーに戻します。よろしいですか？")) {
-        socket.emit('request_reset_game');
-    }
-});
+// --- 描画ロジック ---
+function toggleScreens(isGame) {
+    $('login-screen').classList.toggle('hidden', isGame);
+    $('game-screen').classList.toggle('hidden', !isGame);
+    if (!isGame) $('reset-controls').classList.add('hidden');
+}
 
 function renderGame(state) {
     const { players, turn_player_uid, used_chars, game_over, winner, game_started } = state;
-    const isMyTurn = (turn_player_uid === myUid) && !game_over && game_started;
-
-    // --- 1. ステータスバーとロビー表示の制御 ---
-    const statusEl = document.getElementById('game-status');
-    const lobbyEl = document.getElementById('lobby-controls');
-    const startBtn = document.getElementById('btn-start-game');
-    const resetEl = document.getElementById('reset-controls');
+    const isMe = uid => uid === myUid;
+    const isMyTurn = isMe(turn_player_uid) && !game_over && game_started;
+    
+    // 1. ステータス表示
+    const st = $('game-status'), lb = $('lobby-controls'), rs = $('reset-controls'), btn = $('btn-start-game');
+    lb.classList.toggle('hidden', game_started);
+    rs.classList.toggle('hidden', !game_over);
 
     if (!game_started) {
-        // ゲーム開始前（ロビー画面）
-        statusEl.innerText = "参加者を待っています...";
-        statusEl.style.backgroundColor = "#6c757d"; 
-        
-        lobbyEl.classList.remove('hidden');
-        resetEl.classList.add('hidden');
-        
-        if (players.length >= 2) {
-            startBtn.disabled = false;
-            startBtn.innerText = `ゲーム開始 (${players.length}人)`;
-        } else {
-            startBtn.disabled = true;
-            startBtn.innerText = "待機中... (最低2人必要)";
-        }
-
+        st.innerText = "待機中..."; st.style.background = "#6c757d";
+        btn.disabled = players.length < 2;
+        btn.innerText = players.length < 2 ? "待機中..." : `開始 (${players.length}人)`;
+    } else if (game_over) {
+        st.innerText = `終了! 勝者: ${winner || 'なし'}`; st.style.background = "#dc3545";
     } else {
-        // ゲーム進行中
-        lobbyEl.classList.add('hidden'); 
-
-        if (game_over) {
-            statusEl.innerText = `ゲーム終了！ 勝者: ${winner || 'なし'}`;
-            statusEl.style.backgroundColor = "#dc3545"; 
-            resetEl.classList.remove('hidden');
-            
-        } else if (isMyTurn) {
-            statusEl.innerText = "あなたのターンです！文字を選んで攻撃してください";
-            statusEl.style.backgroundColor = "#28a745"; 
-            resetEl.classList.add('hidden');
-        } else {
-            const turnPlayer = players.find(p => p.uid === turn_player_uid);
-            const turnName = turnPlayer ? turnPlayer.name : "???";
-            statusEl.innerText = `${turnName} さんのターン`;
-            statusEl.style.backgroundColor = "#333";
-            resetEl.classList.add('hidden');
-        }
+        const turnName = players.find(p => p.uid === turn_player_uid)?.name || "???";
+        st.innerText = isMyTurn ? "あなたの番です" : `${turnName} さんの番`;
+        st.style.background = isMyTurn ? "#28a745" : "#333";
     }
 
-    // --- 2. プレイヤーリスト描画 ---
-    const playersListEl = document.getElementById('players-list');
-    playersListEl.innerHTML = "";
-
+    // 2. プレイヤーリスト
+    const list = $('players-list'); list.innerHTML = "";
     players.forEach(p => {
-        const div = document.createElement('div');
-        div.className = `player-card`;
-        
-        if (p.uid === myUid) div.classList.add('is-me');
-        if (p.is_turn) div.classList.add('is-turn');
-        if (!p.is_alive) div.classList.add('is-dead');
+        const card = el('div', `player-card ${isMe(p.uid)?'is-me':''} ${p.is_turn?'is-turn':''} ${!p.is_alive?'is-dead':''}`);
+        card.appendChild(el('div', 'name-label', `${p.name} ${!p.is_alive ? '(脱落)' : ''}`));
 
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'name-label';
-        nameDiv.innerHTML = `<strong>${p.name}</strong> ${!p.is_alive ? '(脱落)' : ''}`;
-        div.appendChild(nameDiv);
+        const board = el('div', 'word-board-container');
+        const prev = prevOpen[p.uid] || [];
 
-        const boardContainer = document.createElement('div');
-        boardContainer.className = 'word-board-container';
-
-        // ★追加: このプレイヤーの前回の開示状況を取得
-        const prevIndices = previousOpenedIndices[p.uid] || [];
-
-        p.display_word.forEach((char, index) => {
-            const charBox = document.createElement('div');
-            charBox.className = 'char-box';
-
-            if (p.opened_indices.includes(index)) {
-                charBox.classList.add('exposed');
-                
-                // ★追加: 「前回は開いていなかった」かつ「今は開いている」場合のみアニメーションクラス付与
-                if (!prevIndices.includes(index)) {
-                    charBox.classList.add('just-exposed');
-                }
+        p.display_word.forEach((char, i) => {
+            const box = el('div', 'char-box', char === '*' ? '?' : char);
+            const isOpen = p.opened_indices.includes(i);
+            
+            if (char === '*') box.classList.add('hidden-char');
+            if (char === '×') box.classList.add('empty-slot');
+            else if (isOpen) {
+                box.classList.add('exposed');
+                if (!prev.includes(i)) box.classList.add('just-exposed');
             }
-
-            if (char === '*') {
-                charBox.classList.add('hidden-char');
-                charBox.innerText = '?';
-            } else {
-                charBox.innerText = char;
-                if (char === '×') {
-                    charBox.classList.add('empty-slot');
-                    charBox.classList.remove('exposed');
-                    charBox.classList.remove('just-exposed');
-                }
-            }
-            boardContainer.appendChild(charBox);
+            board.appendChild(box);
         });
-
-        div.appendChild(boardContainer);
-        playersListEl.appendChild(div);
-
-        // ★追加: 今回の開示状況を「前回」として保存更新
-        previousOpenedIndices[p.uid] = [...p.opened_indices];
+        card.appendChild(board);
+        list.appendChild(card);
+        prevOpen[p.uid] = [...p.opened_indices]; // 履歴更新
     });
 
-    // --- 3. 50音ボード描画 ---
-    renderBoard(used_chars, isMyTurn, game_started);
-}
-
-function renderBoard(usedChars, isMyTurn, gameStarted) {
-    const boardEl = document.getElementById('board-grid');
-    boardEl.innerHTML = "";
-
-    if (isMyTurn) {
-        boardEl.classList.add('active-turn');
-    } else {
-        boardEl.classList.remove('active-turn');
-    }
-
+    // 3. キーボード
+    const kb = $('board-grid'); kb.innerHTML = "";
+    kb.classList.toggle('active-turn', isMyTurn);
+    
     HIRAGANA.forEach(char => {
-        const btn = document.createElement('button');
-        btn.innerText = char;
-        btn.className = 'char-btn';
-
-        if (usedChars.includes(char)) {
-            btn.disabled = true;
-        }
-
-        btn.onclick = () => {
-            if (isMyTurn && gameStarted && !btn.disabled) {
-                socket.emit('attack', { char: char });
-            }
-        };
-
-        boardEl.appendChild(btn);
+        const btn = el('button', 'char-btn', char);
+        if (used_chars.includes(char)) btn.disabled = true;
+        btn.onclick = () => isMyTurn && game_started && !btn.disabled && socket.emit('attack', { char });
+        kb.appendChild(btn);
     });
 }
 
-socket.on('new_chat', (data) => {
-    addChatMessage(data);
-});
-
-// ... (renderGame関数などの後、末尾に追加) ...
-
-// --- ★チャット・スタンプ機能 ---
-
-// テキスト送信ボタン
-const btnSendChat = document.getElementById('btn-send-chat');
-const inputChat = document.getElementById('chat-input');
-
-if (btnSendChat && inputChat) {
-    btnSendChat.addEventListener('click', sendChatText);
+function addChatMessage(d) {
+    const box = $('chat-history');
+    const msgDiv = el('div', `chat-msg ${d.uid === myUid ? 'msg-mine' : 'msg-other'} ${d.type === 'stamp' ? 'msg-stamp' : ''}`);
     
-    // Enterキーでも送信可能に
-    inputChat.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            sendChatText();
-        }
-    });
-}
-
-function sendChatText() {
-    const text = inputChat.value.trim();
-    if (!text) return;
-
-    socket.emit('send_chat', {
-        message: text,
-        type: 'text'
-    });
-    inputChat.value = ''; // 入力欄をクリア
-}
-
-// スタンプ送信関数（HTML側から呼ばれる）
-window.sendStamp = function(stampChar) {
-    socket.emit('send_chat', {
-        message: stampChar,
-        type: 'stamp'
-    });
-}
-
-// チャットログへの追加処理
-function addChatMessage(data) {
-    const historyEl = document.getElementById('chat-history');
-    const isMe = (data.uid === myUid);
-    
-    const div = document.createElement('div');
-    div.classList.add('chat-msg');
-    
-    // 自分か他人かでクラスを分ける
-    if (isMe) {
-        div.classList.add('msg-mine');
+    if (d.type === 'stamp') {
+        msgDiv.innerText = d.message;
     } else {
-        div.classList.add('msg-other');
+        msgDiv.append(el('span', 'msg-name', d.name), el('span', '', d.message));
     }
-
-    // スタンプかテキストかで表示を変える
-    if (data.type === 'stamp') {
-        div.classList.add('msg-stamp');
-        div.innerText = data.message; // 絵文字のみ表示
-    } else {
-        // 名前 + メッセージ
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'msg-name';
-        nameSpan.innerText = data.name;
-        
-        const textSpan = document.createElement('span');
-        textSpan.innerText = data.message;
-        
-        div.appendChild(nameSpan);
-        div.appendChild(textSpan);
-    }
-
-    historyEl.appendChild(div);
-
-    // 自動スクロール（一番下へ）
-    historyEl.scrollTop = historyEl.scrollHeight;
+    box.appendChild(msgDiv);
+    box.scrollTop = box.scrollHeight;
 }
